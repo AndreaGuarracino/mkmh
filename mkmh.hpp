@@ -17,7 +17,7 @@
 #include <assert.h>
 #include <bitset>
 
-#include "murmur3.hpp"
+#include "murmur3/murmur3.hpp"
 #include "HASHTCounter.hpp"
 
 #define DBGG
