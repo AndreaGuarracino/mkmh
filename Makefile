@@ -15,6 +15,9 @@ LD_INC_FLAGS:= -I. -Imurmur3 -IxxHash
 example: example.cpp mkmh.hpp murmur3/libmurmur3.a
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LD_LIB_FLAGS) $(LD_INC_FLAGS) -lmurmur3
 
+all_vs_all_alignments: all_vs_all_alignments.cpp mkmh.hpp murmur3/libmurmur3.a
+	$(CXX) $(CXXFLAGS) -o $@ $< $(LD_LIB_FLAGS) $(LD_INC_FLAGS) -lmurmur3
+
 test: test-exe
 	./test-exe
 
