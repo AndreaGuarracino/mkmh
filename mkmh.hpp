@@ -516,8 +516,9 @@ namespace mkmh {
         uint32_t fhash[4];
         //hash_t tmp_fwd;
         //hash_t tmp_rev;
+
         numhashes = len - k;
-        hashes = new hash_t[numhashes];
+        hashes = (hash_t *) calloc(numhashes, sizeof(hash_t));
         for (int i = 0; i < numhashes; ++i) {
             if (canonical(seq + i, k)) {
                 reverse_complement(seq + i, reverse, k);
@@ -529,10 +530,7 @@ namespace mkmh {
                 hash_t tmp_rev = static_cast<uint64_t>(rhash[0]) << 32 | rhash[1];
 
                 hashes[i] = (tmp_fwd < tmp_rev ? tmp_fwd : tmp_rev);
-            } else {
-                hashes[i] = 0;
             }
-
         }
         delete[] reverse;
     };
@@ -721,7 +719,7 @@ namespace mkmh {
         //hash_t tmp_fwd;
         //hash_t tmp_rev;
         numhashes = len - k;
-        hashes = new hash_t[numhashes];
+        hashes = (hash_t *) calloc(numhashes, sizeof(hash_t));
         for (int i = 0; i < numhashes; ++i) {
             if (canonical(seq + i, k)) {
                 reverse_complement((seq + i), reverse, k);
@@ -734,10 +732,7 @@ namespace mkmh {
 
                 hashes[i] = (tmp_fwd < tmp_rev ? tmp_fwd : tmp_rev);
                 htc->increment(hashes[i]);
-            } else {
-                hashes[i] = 0;
             }
-
         }
         delete[] reverse;
     }
@@ -1012,7 +1007,7 @@ namespace mkmh {
         }
         std::sort(ret.begin(), ret.end());
         int nonzero_ind = 0;
-        while (nonzero_ind < ret.size() && ret[nonzero_ind] == 0){
+        while (nonzero_ind < ret.size() && ret[nonzero_ind] == 0) {
             nonzero_ind++;
         }
 
@@ -1221,10 +1216,10 @@ namespace mkmh {
         ret.reserve(alpha.size());
         int i = 0;
         int j = 0;
-        while (i < alpha.size() && alpha[i] == 0){
+        while (i < alpha.size() && alpha[i] == 0) {
             i++;
         }
-        while(j < beta.size() && beta[j] == 0){
+        while (j < beta.size() && beta[j] == 0) {
             j++;
         }
         while (i < alpha.size() && j < beta.size()) {
