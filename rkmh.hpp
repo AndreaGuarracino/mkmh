@@ -14,9 +14,8 @@ namespace rkmh {
     inline void hash_sequences(std::vector<std::string *> &seqs,
                                std::vector<std::vector<mkmh::hash_t>> &hashes,
                                std::vector<int> &hash_lengths,
-                               std::vector<int> &kmer) {
-//#pragma omp parallel for
-        for (int i = 0; i < seqs.size(); i++) {
+                               int kmer) {
+        for (int i = 0; i < seqs.size(); ++i) {
             if (seqs[i] != nullptr) {
                 hashes[i] = calc_hashes(seqs[i]->c_str(), seqs[i]->length(), kmer);
                 std::sort(hashes[i].begin(), hashes[i].end());
@@ -31,7 +30,7 @@ namespace rkmh {
         return hashes;
     }
 
-    inline double compare(std::vector<mkmh::hash_t> alpha, std::vector<mkmh::hash_t> beta, int kmerSize) {
+    inline double compare(std::vector<mkmh::hash_t> alpha, std::vector<mkmh::hash_t> beta, int kmer_size) {
         int i = 0;
         int j = 0;
 
@@ -81,7 +80,7 @@ namespace rkmh {
             distance = 1.;
         } else {
             //distance = log(double(common + 1) / (denom + 1)) / log(1. / (denom + 1));
-            distance = -log(2 * jaccard / (1. + jaccard)) / kmerSize;
+            distance = -log(2 * jaccard / (1. + jaccard)) / kmer_size;
 
             if (distance > 1) {
                 distance = 1;
