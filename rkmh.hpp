@@ -30,6 +30,14 @@ namespace rkmh {
         return hashes;
     }
 
+    inline std::vector<hash_t> hash_sequence(const char* seq, const int len, const int k, const uint64_t sketch_size) {
+        std::vector<hash_t> hashes = hash_sequence(seq, len, k);
+        if (hashes.size() > sketch_size) {
+            hashes.erase(hashes.begin() + sketch_size, hashes.end());
+        }
+        return hashes;
+    }
+
     inline double compare(std::vector<mkmh::hash_t> alpha, std::vector<mkmh::hash_t> beta, int kmer_size) {
         int i = 0;
         int j = 0;
