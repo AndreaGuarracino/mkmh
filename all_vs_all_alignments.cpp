@@ -12,14 +12,11 @@ int main(int argc, char **argv) {
     {
         std::ifstream in("data/sequences.fa");
         std::string line;
-        std::getline(in, line);
-
-        while (in.good()) {
+        do {
             std::getline(in, line);
-            if (line.length() > 100) {
-                seqs.push_back(new std::string(line));
-            }
-        }
+            std::getline(in, line);
+            seqs.push_back(new std::string(line));
+        } while (in.good());
         in.close();
     }
 
@@ -33,8 +30,8 @@ int main(int argc, char **argv) {
 
     std::cerr << "sequences: " << seqs.size() << std::endl;
 
-    for (uint64_t i = 0; i < seqs.size() / 20; ++i) {
-        for (uint64_t j = i + 1; j < seqs.size() / 20; ++j) {
+    for (uint64_t i = 0; i < seqs.size(); ++i) {
+        for (uint64_t j = i + 1; j < seqs.size(); ++j) {
             rkmh::compare(hashes[i], hashes[j], kmer);
         }
     }
