@@ -18,11 +18,17 @@ namespace rkmh {
 //#pragma omp parallel for
         for (int i = 0; i < seqs.size(); i++) {
             if (seqs[i] != nullptr) {
-                hashes[i] = mkmh::calc_hashes(seqs[i]->c_str(), seqs[i]->length(), kmer);
+                hashes[i] = calc_hashes(seqs[i]->c_str(), seqs[i]->length(), kmer);
                 std::sort(hashes[i].begin(), hashes[i].end());
                 hash_lengths[i] = hashes[i].size();
             }
         }
+    }
+
+    inline std::vector<hash_t> hash_sequence(const char* seq, const int len, const int k) {
+        std::vector<hash_t> hashes = calc_hashes(seq, len, k);
+        std::sort(hashes.begin(), hashes.end());
+        return hashes;
     }
 
     inline double compare(std::vector<mkmh::hash_t> alpha, std::vector<mkmh::hash_t> beta, int kmerSize) {
