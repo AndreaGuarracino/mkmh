@@ -776,7 +776,7 @@ namespace mkmh {
             ret[i] = *(hashes + i);
         }
 
-        delete[] hashes;
+        free(hashes);
 
         return ret;
     };
