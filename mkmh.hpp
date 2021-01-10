@@ -379,7 +379,7 @@ namespace mkmh {
     };
 
 
-    /* Print the kmers of a string, tab separated, to cout 
+    /* Print the kmers of a string, tab separated, to cout
      *   avoids allocating any new memory. */
     inline void print_kmers(char *seq, const int &len, int k) {
         int kmerized_length = len - k;
@@ -503,22 +503,20 @@ namespace mkmh {
     /** Takes the string to be hashed, its length,
      *  a single kmer size, a pointer to hold the hashes,
      *  and an integer to hold the number of hashes.
-     *  
+     *
      *  Possibly thread safe:
      *      seq, len and k are not modified
      *      new [] operator is known threadsafe
      *      User must handle hashes and numhashes properly in calling function.
      **/
-    inline void calc_hashes(const char *seq, const int &len,
-                            const int &k, hash_t *&hashes, int &numhashes) {
+    inline void calc_hashes(const char *seq,
+                            const int &k, hash_t *&hashes, int numhashes) {
         char *reverse = new char[k + 1];
         uint32_t rhash[4];
         uint32_t fhash[4];
         //hash_t tmp_fwd;
         //hash_t tmp_rev;
 
-        numhashes = len - k;
-        hashes = (hash_t *) calloc(numhashes, sizeof(hash_t));
         for (int i = 0; i < numhashes; ++i) {
             if (canonical(seq + i, k)) {
                 reverse_complement(seq + i, reverse, k);
@@ -699,27 +697,25 @@ namespace mkmh {
             offsets.push_back(numhashes);
             numhashes += seq_length - k;
         }
-        hashes = new hash_t[numhashes];
 
+        hashes = new hash_t[numhashes];
         for (int i = 0; i < kmer_sizes.size(); ++i) {
             int k = kmer_sizes[i];
-            int local_numhash;
-            hash_t *l_start;
-            calc_hashes(seq, seq_length, k, l_start, local_numhash);
+            int local_numhash = seq_length - k;
+            hash_t *l_start = new hash_t[local_numhash];
+            calc_hashes(seq, k, l_start, local_numhash);
             memcpy(hashes + offsets[i], l_start, local_numhash * sizeof(hash_t));
             delete[] l_start;
         }
     }
 
-    inline void calc_hashes(const char *seq, const int &len,
-                            const int &k, hash_t *&hashes, int &numhashes, mkmh::HASHTCounter *&htc) {
+    inline void calc_hashes(const char *seq, const int &k, hash_t *&hashes, int &numhashes, mkmh::HASHTCounter *&htc) {
         char *reverse = new char[k + 1];
         uint32_t rhash[4];
         uint32_t fhash[4];
         //hash_t tmp_fwd;
         //hash_t tmp_rev;
-        numhashes = len - k;
-        hashes = (hash_t *) calloc(numhashes, sizeof(hash_t));
+
         for (int i = 0; i < numhashes; ++i) {
             if (canonical(seq + i, k)) {
                 reverse_complement((seq + i), reverse, k);
@@ -755,11 +751,13 @@ namespace mkmh {
 
         for (int i = 0; i < kmer_sizes.size(); ++i) {
             int k = kmer_sizes[i];
-            int local_numhash;
+            int local_numhash = seq_length - k;
+
             //hash_t* l_start = hashes + offsets[i];
-            hash_t *l_start;
+            hash_t *l_start = new hash_t[local_numhash];
+
             // HTC gets incremented within this function, so no need to do a bulk increment.
-            calc_hashes(seq, seq_length, k, l_start, local_numhash, htc);
+            calc_hashes(seq, k, l_start, local_numhash, htc);
             memcpy(hashes + offsets[i], l_start, local_numhash * sizeof(hash_t));
             delete[] l_start;
         }
@@ -768,16 +766,10 @@ namespace mkmh {
 
     /* Calculate all the hashes of the kmers length k of seq */
     inline vector <hash_t> calc_hashes(const char *seq, int seq_length, int k) {
-        int numhashes = 0;
-        hash_t *hashes;
-        calc_hashes(seq, seq_length, k, hashes, numhashes);
+        int numhashes = seq_length - k;
         vector <hash_t> ret(numhashes);
-        for (int i = 0; i < numhashes; i++) {
-            ret[i] = *(hashes + i);
-        }
-
-        free(hashes);
-
+        hash_t *hashes = ret.data();
+        calc_hashes(seq, k, hashes, numhashes);
         return ret;
     };
 
@@ -923,7 +915,7 @@ namespace mkmh {
         return std::vector<hash_t>(x.begin() + valid_ind, x.begin() + hashmax);
     }
 
-    /** MinHash - given an array of hashes, modify the mins array to hold 
+    /** MinHash - given an array of hashes, modify the mins array to hold
      * the lowest/highest N (excluding zeros) **/
     inline void minhashes(hash_t *&hashes, int num_hashes,
                           int sketch_size,

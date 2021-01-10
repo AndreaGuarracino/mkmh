@@ -96,12 +96,11 @@ TEST_CASE("Calc_hashes functions produce the right hashes", "[calc_hashes]") {
     char t[8] = "ACCCCTG";
 
     SECTION("Hashes from calc_hashes for char* are consistent with those from calc_hash") {
-        hash_t *h;
-        int numhashes;
-        calc_hashes((const char *) o, 7, 4, h, numhashes);
+        int numhashes = 7 - 4;
+        hash_t *h = new hash_t[numhashes];
+        calc_hashes((const char *) o, 4, h, numhashes);
 
         for (int i = 0; i < numhashes; i++) {
-
             cerr << string(o + i, o + i + 4) << " : " << *(h + i) << " : " << calc_hash(o + i, 4) << endl;
         }
 
@@ -114,11 +113,11 @@ TEST_CASE("Calc_hashes functions produce the right hashes", "[calc_hashes]") {
 
     SECTION("calc_hashes functions all return the same hashes") {
         vector <hash_t> x = calc_hashes((const char *) o, 7, 4);
-        hash_t *h;
-        int num;
 
-        calc_hashes((const char *) o, 7, 4, h, num);
-        vector <hash_t> y(h, h + num);
+        int num = 7 - 4;
+        vector <hash_t> y(num);
+        hash_t *h = y.data();
+        calc_hashes((const char *) o, 4, h, num);
 
         string zstr(o);
         vector <hash_t> z = calc_hashes(zstr, 4);
