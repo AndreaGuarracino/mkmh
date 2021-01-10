@@ -38,7 +38,7 @@ namespace rkmh {
         return hashes;
     }
 
-    inline double compare(std::vector<mkmh::hash_t> alpha, std::vector<mkmh::hash_t> beta, int kmer_size) {
+    inline double compare(std::vector<mkmh::hash_t> alpha, std::vector<mkmh::hash_t> beta, int kmer_size, bool min_sketch_size_as_denom) {
         int i = 0;
         int j = 0;
 
@@ -72,19 +72,15 @@ namespace rkmh {
         denom += alpha.size() - i;
         denom += beta.size() - j;
 
-        //std::cerr << "common " << common << std::endl;
-        //std::cerr << "denom " << denom << std::endl;
-
         double distance;
 
-        //todo put a flag for denom: take the smallest between alpha.size, beta.size
-        double jaccard = double(common) / denom;
+        double jaccard = double(common) / (min_sketch_size_as_denom ? min(alpha.size(), beta.size()) : denom);
 
-        if (common == denom) // avoid -0
-        {
+        if (common == denom) {
+            // avoid -0
             distance = 0;
-        } else if (common == 0) // avoid inf
-        {
+        } else if (common == 0) {
+            // avoid inf
             distance = 1.;
         } else {
             //distance = log(double(common + 1) / (denom + 1)) / log(1. / (denom + 1));

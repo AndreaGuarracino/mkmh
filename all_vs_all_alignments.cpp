@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 
     for (uint64_t i = 0; i < seqs.size(); ++i) {
         for (uint64_t j = i + 1; j < seqs.size(); ++j) {
-            rkmh::compare(hashes[i], hashes[j], kmer);
+            rkmh::compare(hashes[i], hashes[j], kmer, false);
         }
     }
 
